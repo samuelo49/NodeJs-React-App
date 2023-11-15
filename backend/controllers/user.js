@@ -1,5 +1,4 @@
 const { User, validate } = require('../models/user');
-const validator = require('validator');
 const jwt = require("jsonwebtoken"); // generate a signed JWT token
 const bcrypt = require('bcrypt');  // encrypt user password before storing in db
 const { encrypt, decrypt } = require("../utils/confirmation");
@@ -46,6 +45,7 @@ const createTransporter = async () => {
   const sendEmail = async ({ email, username, res }) => {
     // Create a unique confirmation token
     const confirmationToken = encrypt(username);
+    console.log('confirmation token', confirmationToken);
     const apiUrl = process.env.API_URL || "http://0.0.0.0:4000";
   
     // Initialize the Nodemailer with your Gmail credentials
@@ -58,7 +58,7 @@ const createTransporter = async () => {
       subject: "Email Confirmation",
       html: `Press the following link to verify your email: <a href=${apiUrl}/confirmation/${confirmationToken}>Verification Link</a>`,
     };
-  
+    console.log('mail option structure',mailOptions);
     // Send the email
     Transport.sendMail(mailOptions, function (error, response) {
       if (error) {
@@ -109,8 +109,8 @@ const signup = async (req, res) => {
         );
         user.token = token;
 
-        // Return the created user data
-        res.status(201).json(user);
+         // Send the email verification link
+        return sendEmail({ email, username, res });
     } catch (err) {
         console.error(err);
     }

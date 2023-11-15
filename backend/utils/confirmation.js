@@ -1,27 +1,10 @@
-// backend/utils/confirmation.js
-const fs = require('fs');
-const crypto = require("crypto"); // use it to decrypt and encrypt a random string
+const crypto = require("crypto");
 
-function generateSecretKey() {
-    return crypto.randomBytes(24).toString('hex');
-}
+// const secretKey = crypto.randomBytes(32).toString('hex'); // Generates a 64-character string
+// console.log(secretKey);
 
-function generateInitializationVector() {
-    return crypto.randomBytes(16).toString('hex');
-}
-
-if (!process.env.CONFIRMATION_SECRET_KEY) {
-    const secretKey = generateSecretKey();
-    fs.appendFileSync('.env', `\nCONFIRMATION_SECRET_KEY=${secretKey}`);
-    process.env.CONFIRMATION_SECRET_KEY = secretKey;
-}
-
-if (!process.env.INITIALIZATION_VECTOR) {
-    const iv = generateInitializationVector();
-    fs.appendFileSync('.env', `\nINITIALIZATION_VECTOR=${iv}`);
-    process.env.INITIALIZATION_VECTOR = iv;
-}
-
+// const iv = crypto.randomBytes(16).toString('hex'); // Generates a 32-character string
+// console.log(iv);
 
 const algorithm = process.env.CRYPTO_ALGORITHM;
 const secretKey = process.env.CONFIRMATION_SECRET_KEY;
@@ -30,24 +13,24 @@ const iv = process.env.INITIALIZATION_VECTOR;
 const encrypt = (token) => {
   const cipher = crypto.createCipheriv(
     algorithm,
-    secretKey,
-    Buffer.from(iv, "hex")
+    Buffer.from(secretKey, 'hex'),
+    Buffer.from(iv, 'hex')
   );
 
   const encrypted = Buffer.concat([cipher.update(token), cipher.final()]);
 
-  return encrypted.toString("hex");
+  return encrypted.toString('hex');
 };
 
 const decrypt = (hash) => {
   const decipher = crypto.createDecipheriv(
     algorithm,
-    secretKey,
-    Buffer.from(iv, "hex")
+    Buffer.from(secretKey, 'hex'),
+    Buffer.from(iv, 'hex')
   );
 
   const decrypted = Buffer.concat([
-    decipher.update(Buffer.from(hash, "hex")),
+    decipher.update(Buffer.from(hash, 'hex')),
     decipher.final(),
   ]);
 
@@ -57,6 +40,4 @@ const decrypt = (hash) => {
 module.exports = {
   encrypt,
   decrypt,
-  generateSecretKey,
-  generateInitializationVector,
 };
