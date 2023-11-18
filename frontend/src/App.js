@@ -1,47 +1,24 @@
-import React from "react";
-import { Link, Route, Routes } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Context } from "./context";
+import Navbar from "./components/Navbar";
+import { Routes, Route } from "react-router-dom";
+import Signup from "./pages/Signup";
 
-const Home = () => {
-  <div>
-    <h2>Home</h2>
-  </div>
-};
+const App = () => {
+  const { state, dispatch } = useContext(Context);
 
-const Course = () => {
-  <div>
-    <h2>Course</h2>
-  </div>
-};
-
-const Edpresso = () => {
-  <div>
-    <h2>Edpresso</h2>
-  </div>
-};
-
-function App() {
+  useEffect(() => {}, []);
   return (
     <>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/course">Course</Link>
-          </li>
-          <li>
-            <Link to="/edpresso">Edpresso</Link>
-          </li>
-        </ul>
-      </nav>
+      <Navbar auth={false} />
+      // Define the Routes components which wraps all of the application routes
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/course" element={<Course />} />
-        <Route path="/edpresso" element={<Edpresso />} />
+        // For each route, we need to define a Route component so the browser can 
+        // redirect to the right component.
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </>
   );
-}
+};
 
 export default App;
